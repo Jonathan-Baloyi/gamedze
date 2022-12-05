@@ -1,1 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import "../node_modules/angular-calendar/css/angular-calendar.css";
+
+@import 'app/scss/navbar.scss';
+@import 'app/scss/footer.scss';
+@import 'app/scss/container.scss';
+
+/* Import of bootstrap */
+@import "~bootstrap/dist/css/bootstrap.css"

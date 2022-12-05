@@ -1,0 +1,25 @@
+<!-- <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"> -->
+<nav class="
+  navbar navbar-expand-md
+  fixed-top
+  navbar-dark navbar-bg-mod navbar-padding
+">
+  <a class="navbar-brand navbar-font-color-mod" href="javascript:void(0);" routerLink="/">
+    <!-- <img class="logo" src="assets/logo.png" />  --> DR GAMEDZE
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarCollapse" [ngClass]="{ 'show': navbarOpen, 'hide': outsideClick }">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item" *ngFor="let item of menuItems; let index = index" [id]="index"
+        [class.active]="item.isCurrent" [class.disabled]="item.isDisabled">
+        <a class="nav-link navbar-font-color-mod" (click)="ToggleNavBar()" href="javascript:void(0);"
+          [routerLink]="[item.link]">
+          <i [ngClass]="item.icon"></i> {{ item.name }}
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
