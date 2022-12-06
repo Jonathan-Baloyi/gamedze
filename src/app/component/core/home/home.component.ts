@@ -47,6 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   CalendarView = CalendarView;
 
   viewDate: Date = new Date();
+  bookingTitle: string = "";
 
   actions: CalendarEventAction[] = [
     {
@@ -147,6 +148,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   daysInWeek = 7;
 
+  bookingStartDate: Date = new Date();
+  bookingEndDate: Date = new Date();
+
   private destroy$ = new Subject<void>();
   private refreshInterval: any;
 
@@ -191,7 +195,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
 
     this.refreshInterval = setInterval(() => {
-      console.log("refreshing...")
       this.refresh.next();
     }, 900000)
   }
@@ -202,7 +205,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
-    console.log(events)
+    console.log("Clicked" + events)
     if (isSameMonth(date, this.viewDate)) {
       if (
         (isSameDay(this.viewDate, date) && this.activeDayIsOpen === true) ||
@@ -214,6 +217,18 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
       this.viewDate = date;
     }
+  }
+
+  handleDayClicked(event: any) {
+    this.bookingStartDate = event.date;
+    this.bookingEndDate = addMinutes(this.bookingStartDate, 30);
+
+    this.modal.open(this.modalContent, { size: 'md' });
+  }
+
+  addMinutes(date: Date, minutes: number) {
+    date.setMinutes(date.getMinutes()) + minutes;
+    return date;
   }
 
   eventTimesChanged({
@@ -235,18 +250,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   handleEvent(action: string, event: CalendarEvent): void {
-    console.log(event);
-    this.modalData = { event, action };
-    this.modal.open(this.modalContent, { size: 'lg' });
+    //this.modalData = { event, action };
+    //this.modal.open(this.modalContent, { size: 'md' });
   }
 
   addEvent(): void {
     this.events = [
       ...this.events,
       {
-        title: 'New event',
-        start: startOfDay(new Date()),
-        end: endOfDay(new Date()),
+        title: this.bookingTitle,
+        start: this.bookingStartDate,
+        end: this.bookingEndDate,
         color: colors['red'],
         draggable: true,
         resizable: {
@@ -255,6 +269,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         },
       },
     ];
+
+    this.modal.dismissAll();
+
   }
 
   deleteEvent(eventToDelete: CalendarEvent) {

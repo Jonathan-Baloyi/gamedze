@@ -1,4 +1,3 @@
-<div>{{clickedDate}}</div>
 <div class="row text-center pt-5">
   <div class="col-md-4">
     <div class="btn-group">
@@ -35,17 +34,39 @@
 <br />
 <div [ngSwitch]="view">
   <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
-    [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="clickedDate = $event.day.date"
+    [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="handleDayClicked($event)"
     (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-month-view>
   <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
     (eventClicked)="handleEvent('Clicked', $event.event)" [dayStartHour]="8"
-    (hourSegmentClicked)="clickedDate = $event.date" [hourDuration]="60" [dayEndHour]="17" [hourSegments]="4"
+    (hourSegmentClicked)="handleDayClicked($event)" [hourDuration]="60" [dayEndHour]="17" [hourSegments]="4"
     (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-week-view>
   <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events" [dayStartHour]="8"
     [dayEndHour]="17" [hourSegments]="4" [hourDuration]="60" [refresh]="refresh"
-    (hourSegmentClicked)="clickedDate = $event.date" (eventClicked)="handleEvent('Clicked', $event.event)"
+    (hourSegmentClicked)="handleDayClicked($event)" (eventClicked)="handleEvent('Clicked', $event.event)"
     (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-day-view>
 </div>
+
+
+<ng-template #modalContent let-close="close">
+  <div class="modal-header">
+    <h5 class="modal-title">Add Booking for {{bookingStartDate | date: 'dd-MM-yyyy hh:mm'}} - {{bookingEndDate | date:
+      'hh:mm'}}</h5>
+    <button type="button" class="close" (click)="close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div>
+      <label>Please enter a patient's name</label>
+      <input type="text" [(ngModel)]="bookingTitle" id="bookingTitleId">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="addEvent()">
+      OK
+    </button>
+  </div>
+</ng-template>

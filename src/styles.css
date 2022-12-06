@@ -5,6 +5,7 @@
 @import 'app/scss/navbar.scss';
 @import 'app/scss/footer.scss';
 @import 'app/scss/container.scss';
+@import 'app/scss/home.scss';
 
 /* Import of bootstrap */
 @import "~bootstrap/dist/css/bootstrap.css"
