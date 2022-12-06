@@ -1,6 +1,6 @@
 # Gamedze
 
-`https://jonathan-baloyi.github.io/gamedze/`
+https://jonathan-baloyi.github.io/gamedze/
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.6.
 
