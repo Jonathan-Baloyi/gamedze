@@ -1,5 +1,7 @@
 # Gamedze
 
+`https://jonathan-baloyi.github.io/gamedze/`
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.6.
 
 ## Development server
@@ -25,3 +27,41 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Deploying to github pages
+
+1.  Set the output path to docs in angular.json file
+
+````
+ "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "docs",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": []
+          },
+
+          ```
+
+    Change the base ref in index.html to just a .
+    then run ng build --prod
+    Git push
+    Configure the folder for github pages in github
+
+2. Change the base ref in index.html to just a .
+3.ng build --configuration production --aot
+4. Git push
+5. Configure github folder for github pages in settings
+
+````
