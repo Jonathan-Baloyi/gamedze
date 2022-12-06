@@ -16,6 +16,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FlatpickrModule } from 'angularx-flatpickr';
+import { BookingService } from './services/bookings.service';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,7 @@ import { FlatpickrModule } from 'angularx-flatpickr';
     }),
     NgbModule,
   ],
-  providers: [MenuService],
+  providers: [MenuService, BookingService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

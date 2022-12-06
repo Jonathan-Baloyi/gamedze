@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CalendarEventAction, CalendarEventTimesChangedEvent, CalendarView } from 'angular-calendar';
+import { CalendarEventAction, CalendarEventTimesChangedEvent, CalendarEventTitleFormatter, CalendarView } from 'angular-calendar';
 import { CalendarEvent, EventColor } from 'calendar-utils';
-import { addDays, addHours, endOfDay, endOfMonth, isSameDay, isSameMonth, startOfDay, subDays } from 'date-fns';
-import { Subject } from 'rxjs';
+import { addDays, addHours, addMinutes, endOfDay, endOfMonth, isSameDay, isSameMonth, startOfDay, subDays } from 'date-fns';
+import { Subject, takeUntil } from 'rxjs';
+import { CustomEventTitleFormatter } from 'src/app/utils/custom-event-title-formatter.provider';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 
 const colors: Record<string, EventColor> = {
   red: {
@@ -18,28 +20,33 @@ const colors: Record<string, EventColor> = {
     primary: '#e3bc08',
     secondary: '#FDF1BA',
   },
+  green: {
+    primary: "#b4f0c4",
+    secondary: "#b4f0c4",
+  }
 };
 
 @Component({
   selector: 'app-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',
-  styleUrls: []
+  styleUrls: [],
+  providers: [
+    {
+      provide: CalendarEventTitleFormatter,
+      useClass: CustomEventTitleFormatter,
+    },
+  ],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('modalContent', { static: true })
   modalContent!: TemplateRef<any>;
 
-  view: CalendarView = CalendarView.Month;
+  view: CalendarView = CalendarView.Week;
 
   CalendarView = CalendarView;
 
   viewDate: Date = new Date();
-
-  modalData!: {
-    action: string;
-    event: CalendarEvent;
-  };
 
   actions: CalendarEventAction[] = [
     {
@@ -59,16 +66,36 @@ export class HomeComponent {
     },
   ];
 
+  modalData: {
+    action: string;
+    event: CalendarEvent;
+  } = {
+      action: "",
+      event: {
+        start: subDays(startOfDay(new Date()), 1),
+        end: addMinutes(new Date(), 15),
+        title: '',
+        color: { ...colors['red'] },
+        actions: this.actions,
+        allDay: false,
+        resizable: {
+          beforeStart: true,
+          afterEnd: true,
+        },
+        draggable: true,
+      },
+    };
+
   refresh = new Subject<void>();
 
   events: CalendarEvent[] = [
     {
-      start: subDays(startOfDay(new Date()), 1),
-      end: addDays(new Date(), 1),
-      title: 'A 3 day event',
+      start: new Date("December 15, 2022 10:00:00"),
+      end: new Date("December 15, 2022 10:30:00"),
+      title: 'Cynthia Mokasi',
       color: { ...colors['red'] },
       actions: this.actions,
-      allDay: true,
+      allDay: false,
       resizable: {
         beforeStart: true,
         afterEnd: true,
@@ -76,23 +103,34 @@ export class HomeComponent {
       draggable: true,
     },
     {
-      start: startOfDay(new Date()),
-      title: 'An event with no end date',
+      start: new Date("December 10, 2022 09:00:00"),
+      end: new Date("December 10, 2022 09:30:00"),
+      title: 'Patience Test',
       color: { ...colors['yellow'] },
       actions: this.actions,
+      resizable: {
+        beforeStart: true,
+        afterEnd: true,
+      },
+      draggable: true,
     },
     {
-      start: subDays(endOfMonth(new Date()), 3),
-      end: addDays(endOfMonth(new Date()), 3),
-      title: 'A long event that spans 2 months',
+      start: new Date("December 11, 2022 09:00:00"),
+      end: new Date("December 11, 2022 09:30:00"),
+      title: 'Jabulile Sobuza',
       color: { ...colors['blue'] },
-      allDay: true,
+      allDay: false,
+      resizable: {
+        beforeStart: true,
+        afterEnd: true,
+      },
+      draggable: true,
     },
     {
-      start: addHours(startOfDay(new Date()), 2),
-      end: addHours(new Date(), 2),
-      title: 'A draggable and resizable event',
-      color: { ...colors['yellow'] },
+      start: new Date("December 15, 2022 11:00:00"),
+      end: new Date("December 15, 2022 11:30:00"),
+      title: 'Stand Tall',
+      color: { ...colors['green'] },
       actions: this.actions,
       resizable: {
         beforeStart: true,
@@ -102,11 +140,69 @@ export class HomeComponent {
     },
   ];
 
+
   activeDayIsOpen: boolean = true;
 
-  constructor(private modal: NgbModal) { }
+  clickedDate: Date | undefined;
+
+  daysInWeek = 7;
+
+  private destroy$ = new Subject<void>();
+  private refreshInterval: any;
+
+
+  constructor(
+    private modal: NgbModal,
+    private breakpointObserver: BreakpointObserver,
+    private cd: ChangeDetectorRef
+  ) { }
+
+  ngOnInit() {
+    const CALENDAR_RESPONSIVE = {
+      small: {
+        breakpoint: '(max-width: 576px)',
+        daysInWeek: 2,
+      },
+      medium: {
+        breakpoint: '(max-width: 768px)',
+        daysInWeek: 3,
+      },
+      large: {
+        breakpoint: '(max-width: 960px)',
+        daysInWeek: 5,
+      },
+    };
+
+    this.breakpointObserver
+      .observe(
+        Object.values(CALENDAR_RESPONSIVE).map(({ breakpoint }) => breakpoint)
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((state: BreakpointState) => {
+        const foundBreakpoint = Object.values(CALENDAR_RESPONSIVE).find(
+          ({ breakpoint }) => !!state.breakpoints[breakpoint]
+        );
+        if (foundBreakpoint) {
+          this.daysInWeek = foundBreakpoint.daysInWeek;
+        } else {
+          this.daysInWeek = 7;
+        }
+        this.cd.markForCheck();
+      });
+
+    this.refreshInterval = setInterval(() => {
+      console.log("refreshing...")
+      this.refresh.next();
+    }, 900000)
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.refreshInterval);
+    this.destroy$.next();
+  }
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
+    console.log(events)
     if (isSameMonth(date, this.viewDate)) {
       if (
         (isSameDay(this.viewDate, date) && this.activeDayIsOpen === true) ||
@@ -139,6 +235,7 @@ export class HomeComponent {
   }
 
   handleEvent(action: string, event: CalendarEvent): void {
+    console.log(event);
     this.modalData = { event, action };
     this.modal.open(this.modalContent, { size: 'lg' });
   }
