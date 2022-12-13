@@ -219,8 +219,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleDayClicked(event: any) {
-    this.bookingStartDate = event.date;
+  handleDayClicked(date: any) {
+    this.bookingStartDate = date;
     this.bookingEndDate = addMinutes(this.bookingStartDate, 30);
 
     this.modal.open(this.modalContent, { size: 'md' });
