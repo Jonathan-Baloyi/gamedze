@@ -50,15 +50,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   bookingTitle: string = "";
 
   actions: CalendarEventAction[] = [
+    // {
+    //   label: '<i class="bi bi-pencil"></i>',
+    //   a11yLabel: 'Edit',
+    //   onClick: ({ event }: { event: CalendarEvent }): void => {
+    //     this.handleEvent('Edited', event);
+    //   },
+    // },
     {
-      label: '<i class="fas fa-fw fa-pencil-alt"></i>',
-      a11yLabel: 'Edit',
-      onClick: ({ event }: { event: CalendarEvent }): void => {
-        this.handleEvent('Edited', event);
-      },
-    },
-    {
-      label: '<i class="fas fa-fw fa-trash-alt"></i>',
+      label: '<i class="bi bi-x-lg"></i>',
       a11yLabel: 'Delete',
       onClick: ({ event }: { event: CalendarEvent }): void => {
         this.events = this.events.filter((iEvent) => iEvent !== event);
@@ -120,6 +120,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       end: new Date("December 11, 2022 09:30:00"),
       title: 'Jabulile Sobuza',
       color: { ...colors['blue'] },
+      actions: this.actions,
       allDay: false,
       resizable: {
         beforeStart: true,
@@ -261,6 +262,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         title: this.bookingTitle,
         start: this.bookingStartDate,
         end: this.bookingEndDate,
+        actions: this.actions,
         color: colors['red'],
         draggable: true,
         resizable: {
