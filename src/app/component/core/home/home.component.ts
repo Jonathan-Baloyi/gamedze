@@ -6,6 +6,7 @@ import { addDays, addHours, addMinutes, endOfDay, endOfMonth, isSameDay, isSameM
 import { Subject, takeUntil } from 'rxjs';
 import { CustomEventTitleFormatter } from 'src/app/utils/custom-event-title-formatter.provider';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
+import { FormControl, FormGroup } from '@angular/forms';
 
 const colors: Record<string, EventColor> = {
   red: {
@@ -91,10 +92,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   events: CalendarEvent[] = [
     {
-      start: new Date("December 15, 2022 10:00:00"),
-      end: new Date("December 15, 2022 10:30:00"),
+      start: new Date("January 16, 2023 10:00:00"),
+      end: new Date("January 16, 2023 10:30:00"),
       title: 'Cynthia Mokasi',
-      color: { ...colors['red'] },
+      color: { ...colors['blue'] },
       actions: this.actions,
       allDay: false,
       resizable: {
@@ -155,14 +156,28 @@ export class HomeComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private refreshInterval: any;
 
+  medicalAidChecked = false;
+  pregnantChecked = true;
+
+
+  //bookingFormGroup!: FormGroup;
 
   constructor(
     private modal: NgbModal,
     private breakpointObserver: BreakpointObserver,
     private cd: ChangeDetectorRef
-  ) { }
+  ) {
+
+  }
+
 
   ngOnInit() {
+
+    // TODO: Convert the form into a form group
+    // this.bookingFormGroup = new FormGroup({
+    //   patientName: new FormControl('')
+    // });
+
     const CALENDAR_RESPONSIVE = {
       small: {
         breakpoint: '(max-width: 576px)',
@@ -263,7 +278,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         start: this.bookingStartDate,
         end: this.bookingEndDate,
         actions: this.actions,
-        color: colors['red'],
+        color: colors['blue'],
         draggable: true,
         resizable: {
           beforeStart: true,
@@ -273,6 +288,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     ];
 
     this.bookingTitle = "";
+    this.medicalAidChecked = false;
+    this.pregnantChecked = true;
     this.modal.dismissAll();
 
   }
